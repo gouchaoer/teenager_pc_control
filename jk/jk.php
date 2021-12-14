@@ -1,8 +1,7 @@
 <?php
 $net_fail=0;
 while(true){
-    //$URL = "http://120.24.87.76/hz.php?sn=xxxx";
-    $URL = "http://127.0.0.1/jk/hz.php?sn=RBiJCmTZ7BsfaS56i3m2pFrmbdzctYPi";
+    $URL = "http://120.24.87.76/hz.php?sn=xxxx";
     logging("start get");
     $html = @file_get_contents($URL, 0, stream_context_create(["http"=>["timeout"=>5]]));
     if($html=="ok"){

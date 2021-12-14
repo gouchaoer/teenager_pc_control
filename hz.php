@@ -38,9 +38,9 @@ $hz[$hour]++;
 $hz_str = json_encode($hz, JSON_PRETTY_PRINT);
 @file_put_contents($hz_path, $hz_str);
 
-var_dump($hz);
-var_dump($ct);
-var_dump($jz_str);
+//var_dump($hz);
+//var_dump($ct);
+//var_dump($jz_str);
 
 if($ct > $jz_str){
 	return "ok";
