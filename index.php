@@ -1,3 +1,66 @@
+<?php
+date_default_timezone_set("Asia/Shanghai");
+
+$sn = $_GET['sn'];
+$sn = strval($sn);
+if(!preg_match("#\w{32}#", $sn))
+	die("sn error");
+if(!file_exists(__DIR__."/{$sn}")){
+	mkdir($sn);
+}
+if(!file_exists(__DIR__."/{$sn}")){
+	die("mkdir error");
+}
+
+function render_2_week(){
+	global $sn;
+	$now  = time();
+	$res = "";
+	for($i=-7;$i<=7;$i++){
+		$day_ts = $now + $i * 24 * 3600;
+		$day_str = date("Y-m-d",$day_ts);
+		$line = "";
+		$week_str = date("w", $day_ts);
+		$jz_path = __DIR__."/{$sn}/{$day_str}";
+		$jz_str = @file_get_contents($jz_path);
+		if(empty($jz_str)){
+			if($week_str === "0")
+				$hour=8;
+			else if($week_str ==='6')
+				$hour=4;
+			else
+				$hour=1;
+			file_put_contents($jz_path, "{$hour}");
+		}
+		$hour =  floatval($jz_str);
+		$hz_path = __DIR__ ."/{$sn}/{$day_str}.json";
+		$hz_str = @file_get_contents($hz_path);
+		$hz = @json_decode($hz_str, true);
+$ct=0;
+		for($j=0;$j<24;$j++){
+//			$ct = 0;
+$jj=sprintf("%02d", $j);
+			if(isset($hz[$jj])){
+				$ct_tmp = $hz[$jj]/60.0;
+				//if($ct_tmp>0.8)
+				//	$ct_tmp=1.0 ;
+                $ct_tmp = sprintf("%.2f", $ct_tmp);
+                $ct+=$ct_tmp;
+				$line .="[{$j}-{$ct_tmp}]";
+			}else{
+				$line .="[{$j}-]";
+			}
+		}
+		$line .="【{$day_str}星期{$week_str}：{$ct}/{$hour}】";
+		$line .="<br />";
+		$res .= $line;
+	}
+	return $res;
+}
+
+//date("Y-m-d",time());
+$html = render_2_week();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +75,7 @@
 	body {
 		background-color: #fff;
 		margin: 40px auto;
-		max-width: 1024px;
+		max-width: 1920px;
 		font: 16px/24px normal "Helvetica Neue",Helvetica,Arial,sans-serif;
 		color: #808080;
 	}
@@ -96,39 +159,9 @@
 			未成年电脑监控系统
 		</h1>
 		<div id="body">
-			<form action="jz.php" method="get">
-				<div style="">
-					输入电脑编号登录: <input type="text" name="sn" />
-					<input type="submit" value="登录" />
-				</div>
-				<br />
-				<script>
-					function randomString(len) {
-						 　　len = len || 32;
-						 　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
-						 　　var maxPos = $chars.length;
-						 　　var pwd = '';
-						 　　for (i = 0; i < len; i++) {
-							 　　　　pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
-							 　　}
-						 　　return pwd;
-					};
-					function gen_sn(){
-						var rand_str = randomString(32);
-						var sn_copy = document.getElementById('sn_copy');
-						sn_copy.innerText = rand_str;
-						document.getElementById('gen_sn').style.display = 'block';
-					}
-				</script>
-				没有电脑编号？<button type="button" onclick="gen_sn()">点我接入电脑</button>
-				<div id="gen_sn" style="display: none;">
-					<p>1. 你的电脑编号为（请复制保存）：<span id="sn_copy"></span></p>
-					<p>2. 点我下载电脑接入程序：<a href="jk.zip">jk.zip</a></p>
-                    <p>3. 把jk.zip解压到一个不容易发现的文件夹，修改jk.php中的“http://120.24.87.76/hz.php?sn=xxxx”的xxxx改成你的电脑编号</p>
-                    <p>4. 在win10中打开“任务计划任务”-》“创建基本任务”-》“触发器”-》“计算机启动时”-》“操作”——》“启动程序”-》“程序或脚本”-》“path\to\php.php”-》“添加参数”-》“jk.php”-》“起始于”-》“path\to”-》“完成”</p>
-                    <p>5. 那一天小朋友终于想起被大人支配的恐惧</p>
-				</div>
-			</form>
+			<?php
+			echo $html;
+			?>
 		<p class="footer">Page rendered in <strong>0.0158</strong> seconds. CodeIgniter Version <strong>3.2.0-dev</strong></p>
 	</div>
 </body>

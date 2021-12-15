@@ -36,10 +36,12 @@ function render_2_week(){
 		$hz_path = __DIR__ ."/{$sn}/{$day_str}.json";
 		$hz_str = @file_get_contents($hz_path);
 		$hz = @json_decode($hz_str, true);
+$ct=0;
 		for($j=0;$j<24;$j++){
-			$ct = 0;
-			if(isset($hz[$j])){
-				$ct_tmp = $hz[$j]/60.0;
+//			$ct = 0;
+$jj=sprintf("%02d", $j);
+			if(isset($hz[$jj])){
+				$ct_tmp = $hz[$jj]/60.0;
 				//if($ct_tmp>0.8)
 				//	$ct_tmp=1.0 ;
                 $ct_tmp = sprintf("%.2f", $ct_tmp);
@@ -50,6 +52,13 @@ function render_2_week(){
 			}
 		}
 		$line .="【{$day_str}星期{$week_str}：{$ct}/{$hour}】";
+$line .=<<<EOL
+<form action="/set.php?sn={$sn}&day_str={$day_str}" method="POST">
+hour:<br>
+<input type="text" name="hour" value="">
+<input type="submit" value="Submit">
+</form> 
+EOL;
 		$line .="<br />";
 		$res .= $line;
 	}

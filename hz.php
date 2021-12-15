@@ -22,14 +22,19 @@ $hour =  date("H", $now);
 $hz_path = __DIR__ ."/{$sn}/{$day_str}.json";
 $hz_str = @file_get_contents($hz_path);
 $hz = @json_decode($hz_str, true);
+//var_dump($hz_str);
+//var_dump($hz);
+$ct=0.0;
 
-$ct=0;
-for($j=0;$j<60;$j++){
-	if(isset($hz[$j])){
-		$ct_tmp = $hz[$j]/60.0;
-		if($ct_tmp>0.8)
-			$ct_tmp=1.0 ;
-		$ct +=$ct_tmp;
+for($j=0;$j<=24;$j++){
+$jj=sprintf("%02d", $j);//var_dump($jj);
+	if(isset($hz[$jj])){
+		$ct_tmp = $hz[$jj]/60.0;
+		//if($ct_tmp>1.0)
+		//	$ct_tmp=1.0 ;
+		
+$ct_tmp = sprintf("%.2f", $ct_tmp);
+$ct +=$ct_tmp;
 	}
 }
 
@@ -42,8 +47,8 @@ $hz_str = json_encode($hz, JSON_PRETTY_PRINT);
 //var_dump($ct);
 //var_dump($jz_str);
 
-if($ct > $jz_str){
-	return "ok";
+if($ct < $jz_str){
+	echo "ok";
 }else{
-	return "no";
+	echo "no";
 }
